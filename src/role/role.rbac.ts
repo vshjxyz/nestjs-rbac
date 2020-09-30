@@ -14,7 +14,7 @@ export class RoleRbac implements IRoleRbac {
   ) {
   }
 
-  can(...permissions: string[]): boolean {
+  async can(...permissions: string[]): boolean {
     if (!permissions.length) {
       return false;
     }
@@ -36,9 +36,9 @@ export class RoleRbac implements IRoleRbac {
         const filterService: IFilterPermission = this.filters[filter];
 
         if (
-          filterService && !filterService.can(
+          filterService && !(await filterService.can(
           this.paramsFilter ? this.paramsFilter.getParam(filter) : null,
-          )
+          ))
         ) {
           return false;
         }
@@ -53,9 +53,9 @@ export class RoleRbac implements IRoleRbac {
             this.grant.includes(`${permission}@${filter}`)
           ) {
             if (
-              !this.filters[filter].can(
+              !(await this.filters[filter].can(
                 this.paramsFilter ? this.paramsFilter.getParam(filter) : null,
-              )
+              ))
             ) {
               return false;
             }
